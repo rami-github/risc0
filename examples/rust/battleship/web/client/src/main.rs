@@ -22,6 +22,7 @@ mod layout;
 mod lobby;
 mod near;
 mod wallet;
+mod state;
 
 use std::rc::Rc;
 
@@ -53,12 +54,12 @@ enum Msg {
     SignOut,
 }
 
-struct App {
+struct AppStructComponent {
     journal: Dispatcher<EventBus<String>>,
     wallet: Rc<NearWallet>,
 }
 
-impl Component for App {
+impl Component for AppStructComponent {
     type Message = Msg;
     type Properties = ();
 
@@ -88,6 +89,7 @@ impl Component for App {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let user = self.wallet.current_user().unwrap();
         let has_user = !user.is_empty();
+
         html! {
             <BrowserRouter>
                 <div class="container">
@@ -139,35 +141,70 @@ impl Component for App {
     }
 }
 
-impl App {
+impl AppStructComponent {
     fn view_main(&self, wallet: &Rc<NearWallet>) -> Html {
-        let render = Switch::render(move |routes| switch(routes));
+        // let render = Switch::render(move |routes| switch(routes));
         html! {
             <WalletProvider wallet={wallet.clone()}>
-                <Switch<Route> {render} />
+                <Switch<Route> render={switch} />
             </WalletProvider>
         }
     }
 }
 
-fn switch(routes: &Route) -> Html {
-    match routes.clone() {
-        Route::Lobby => html! { <Lobby /> },
-        Route::NewGame { name } => html! {
-            <GameProvider {name} until={1}>
-                <Layout />
-            </GameProvider>
-        },
-        Route::JoinGame { name } => html! {
-            <GameProvider {name} until={2}>
-                <Layout />
-            </GameProvider>
-        },
-        Route::NotFound => html! { <h1>{ "404" }</h1> },
+fn switch(routes: Route) -> Html {
+    match routes {
+        Route::Lobby { } => {
+            html! { <Lobby /> }
+        }
+        Route::NewGame { name } => {
+            html! {
+                <GameProvider {name} until={1}>
+                    <Layout />
+                </GameProvider> }
+        }
+        Route::JoinGame { name } => {
+            html! { <GameProvider {name} until={2}>
+                    <Layout />
+                </GameProvider> }
+}
+        Route::NotFound => {
+            html! { <h1>{ "404" }</h1> }
+        }
     }
+}
+
+// fn switch(routes: &Route) -> Html {
+//     match routes.clone() {
+//         Route::Lobby => html! { <Lobby /> },
+//         Route::NewGame { name } => html! {
+//             <GameProvider {name} until={1}>
+//                 <Layout />
+//             </GameProvider>
+//         },
+//         Route::JoinGame { name } => html! {
+//             <GameProvider {name} until={2}>
+//                 <Layout />
+//             </GameProvider>
+//         },
+//         Route::NotFound => html! { <h1>{ "404" }</h1> },
+//     }
+// }
+
+#[function_component]
+pub fn App() -> Html {
+    html! {
+        <AppComponentHOC />
+    }
+}
+
+#[function_component]
+pub fn AppComponentHOC() -> Html {
+    html! {<AppStructComponent />}
 }
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
-    yew::start_app::<App>();
+    // yew::start_app::<App>();
+    yew::Renderer::<App>::new().render();
 }

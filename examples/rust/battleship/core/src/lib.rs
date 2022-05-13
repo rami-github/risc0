@@ -117,6 +117,18 @@ impl GameState {
         }
         true
     }
+    pub fn new() -> GameState {
+        let ships: [Ship; NUM_SHIPS] = [Ship {
+            pos: Position { x: 0, y: 0 },
+            dir: ShipDirection::Horizontal,
+            hit_mask: 0,
+        }; NUM_SHIPS];
+
+        GameState {
+            ships: ships,
+            salt: 0xDEADBEEF,
+        }
+    }
 }
 
 impl RoundParams {

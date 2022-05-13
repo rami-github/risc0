@@ -13,22 +13,24 @@
 // limitations under the License.
 
 use std::{collections::HashSet, marker::PhantomData};
+use serde::{Deserialize, Serialize};
+use yew_agent::{Worker, WorkerLink, HandlerId, Public};
 
-use yew_agent::{Agent, AgentLink, Context, HandlerId};
-
+#[derive(Deserialize, Serialize)]
 pub struct EventBus<T: Clone + 'static> {
-    link: AgentLink<EventBus<T>>,
+    link: WorkerLink<EventBus<T>>,
     subscribers: HashSet<HandlerId>,
     _marker: PhantomData<T>,
 }
 
-impl<T: Clone + 'static> Agent for EventBus<T> {
-    type Reach = Context<Self>;
+
+impl<T: Clone + 'static> Worker for EventBus<T> {
+    type Reach = Public<Self>;
     type Message = ();
     type Input = T;
     type Output = T;
 
-    fn create(link: AgentLink<Self>) -> Self {
+    fn create(link: WorkerLink<Self>) -> Self {
         Self {
             link,
             subscribers: HashSet::new(),

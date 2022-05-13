@@ -17,7 +17,8 @@ use std::rc::Rc;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_agent::{Dispatched, Dispatcher};
-use yew_router::{components::Link, history::History, prelude::RouterScopeExt};
+use yew_router::{components::Link};
+use yew_router::prelude::*;
 
 use crate::{bus::EventBus, contract::Contract, near::NearContract, wallet::WalletContext, Route};
 
@@ -71,7 +72,8 @@ impl Component for Lobby {
             }
             Msg::NewGame(name) => {
                 self.journal.send("Lobby::NewGame".into());
-                ctx.link().history().unwrap().push(Route::NewGame { name });
+                let navigator = ctx.link().navigator().unwrap();
+                navigator.push(&Route::NewGame { name });
                 true
             }
         }

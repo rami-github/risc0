@@ -31,6 +31,9 @@ use battleship_core::{
     GameState, Position, RoundParams, RoundResult, Ship, ShipDirection, BOARD_SIZE, SHIP_SPANS,
 };
 
+// use crate::state::{Action, State};
+// use yew::prelude::*;
+
 pub type CoreHitType = battleship_core::HitType;
 
 const WAIT_TURN_INTERVAL: u32 = 5_000;
@@ -47,7 +50,7 @@ pub struct TurnResult {
     receipt: String,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub enum GameMsg {
     Init,
     Shot(Position),
@@ -205,16 +208,20 @@ impl Component for GameProvider {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
+        // let game_state = use_reducer(State::default);
+
         let (wallet, _) = ctx
             .link()
             .context::<WalletContext>(Callback::noop())
             .unwrap();
-        let state = GameState {
-            ships: ctx.props().ships,
-            salt: 0xDEADBEEF,
-        };
+        // let state = GameState {
+        //     ships: ctx.props().ships,
+        //     salt: 0xDEADBEEF,
+        // };
+        // game_state.dispatch(Action::PlaceShips(ctx.props().ships, ctx.props().name.clone()));
+
         let game = GameSession {
-            state,
+            state: GameState::new(),
             name: ctx.props().name.clone(),
             contract: wallet.contract.clone(),
             local_shots: HashMap::new(),
@@ -227,6 +234,7 @@ impl Component for GameProvider {
         if ctx.props().until == 1 {
             ctx.link().send_message(GameMsg::Init);
         }
+
         GameProvider {
             _bridge: EventBus::bridge(ctx.link().callback(|msg| msg)),
             journal: EventBus::dispatcher(),
