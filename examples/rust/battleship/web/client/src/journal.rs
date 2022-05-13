@@ -16,6 +16,7 @@ use yew::prelude::*;
 use yew_agent::{Bridge, Bridged};
 
 use crate::bus::EventBus;
+use std::rc::Rc;
 
 pub struct Journal {
     _bridge: Box<dyn Bridge<EventBus<String>>>,
@@ -31,8 +32,12 @@ impl Component for Journal {
     type Properties = ();
     // TODO:: fix EventBus<String>
     fn create(ctx: &Context<Self>) -> Self {
+        let cb = {
+            let link = ctx.link().clone();
+            move |e| link.send_message(Msg::AddLine(e))
+        };
         Journal {
-            _bridge: EventBus::bridge(ctx.link().callback(Msg::AddLine)),
+            _bridge: EventBus::bridge(Rc::new(cb)),
             lines: Vec::new(),
         }
     }

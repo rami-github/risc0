@@ -212,8 +212,13 @@ impl Component for GameProvider {
         }
 
         // TODO:: fix EventBus<GameMsg>
+        // let callback = ctx.link().callback(|msg| msg);
+        let cb = {
+            let link = ctx.link().clone();
+            move |msg| link.send_message(msg)
+        };
         GameProvider {
-            _bridge: EventBus::bridge(ctx.link().callback(|msg| msg)),
+            _bridge: EventBus::bridge(Rc::new(cb)),
             journal: EventBus::dispatcher(),
             game,
         }

@@ -16,6 +16,8 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
 
+// #[derive(Serialize, Deserialize)]
+
 #[async_trait(?Send)]
 pub trait Contract {
     async fn list_games(&self) -> Result<Vec<String>, JsValue>;
