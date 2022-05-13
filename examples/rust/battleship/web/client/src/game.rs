@@ -181,6 +181,7 @@ impl Component for GameProvider {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
+        // TODO:: can only be used in a function component, Wrap in  function HOC like App
         // let game_state = use_reducer(State::default);
 
         let (wallet, _) = ctx
@@ -191,6 +192,8 @@ impl Component for GameProvider {
         //     ships: ctx.props().ships,
         //     salt: 0xDEADBEEF,
         // };
+
+        // TODO:: can only be used in a function component
         // game_state.dispatch(Action::PlaceShips(ctx.props().ships, ctx.props().name.clone()));
 
         let game = GameSession {
@@ -208,6 +211,7 @@ impl Component for GameProvider {
             ctx.link().send_message(GameMsg::Init);
         }
 
+        // TODO:: fix EventBus<GameMsg>
         GameProvider {
             _bridge: EventBus::bridge(ctx.link().callback(|msg| msg)),
             journal: EventBus::dispatcher(),

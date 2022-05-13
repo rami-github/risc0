@@ -29,7 +29,7 @@ pub enum Msg {
 impl Component for Journal {
     type Message = Msg;
     type Properties = ();
-
+    // TODO:: fix EventBus<String>
     fn create(ctx: &Context<Self>) -> Self {
         Journal {
             _bridge: EventBus::bridge(ctx.link().callback(Msg::AddLine)),

@@ -16,6 +16,7 @@ use std::{collections::HashSet, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 use yew_agent::{Worker, WorkerLink, HandlerId, Public};
 
+// TODO:: fix EventBus<T>
 #[derive(Deserialize, Serialize)]
 pub struct EventBus<T: Clone + 'static> {
     link: WorkerLink<EventBus<T>>,
