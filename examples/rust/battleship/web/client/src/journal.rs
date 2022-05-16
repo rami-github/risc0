@@ -30,7 +30,6 @@ pub enum Msg {
 impl Component for Journal {
     type Message = Msg;
     type Properties = ();
-    // TODO:: fix EventBus<String>
     fn create(ctx: &Context<Self>) -> Self {
         let cb = {
             let link = ctx.link().clone();

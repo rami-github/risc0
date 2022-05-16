@@ -164,11 +164,14 @@ fn create_random_ships() -> [Ship; 5] {
 pub struct Props {
     pub name: String,
     pub until: usize,
+    pub game_props: GameProps,
     #[prop_or_else(create_random_ships)]
     pub ships: [Ship; 5],
     #[prop_or_default]
     pub children: Children,
 }
+
+
 
 pub struct GameProvider {
     _bridge: Box<dyn Bridge<EventBus<GameMsg>>>,
@@ -181,8 +184,7 @@ impl Component for GameProvider {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
-        // TODO:: can only be used in a function component, Wrap in  function HOC like App
-        // let game_state = use_reducer(State::default);
+
 
         let (wallet, _) = ctx
             .link()
@@ -210,9 +212,6 @@ impl Component for GameProvider {
         if ctx.props().until == 1 {
             ctx.link().send_message(GameMsg::Init);
         }
-
-        // TODO:: fix EventBus<GameMsg>
-        // let callback = ctx.link().callback(|msg| msg);
         let cb = {
             let link = ctx.link().clone();
             move |msg| link.send_message(msg)
@@ -406,3 +405,36 @@ impl Component for GameProvider {
         }
     }
 }
+#[derive(Clone, PartialEq, Properties)]
+pub struct GameProps {
+    pub name: String,
+    pub until: usize,
+    pub children: Children,
+}
+
+// #[function_component]
+// pub fn GameProviderHOC() -> Html {
+//     let game_props = use_context::<GameProps>().expect("no ctx found");
+//     let game_state = use_reducer(State::default);
+
+//     html! {<GameProvider />}
+// }
+
+
+#[function_component]
+pub fn GameHOC(props: &GameProps) -> Html {
+    let GameProps { name, until, children } = props;
+    let ctx = use_state(|| GameProps {
+        name: name.clone(),
+        until: until.clone(),
+        children: Children::from(children.clone()),
+    });
+    html! {
+        <ContextProvider<GameProps> context={(*ctx).clone()}>
+            <GameProvider {name} until={1} />
+        </ContextProvider<GameProps>>
+
+    }
+}
+
+

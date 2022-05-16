@@ -15,15 +15,14 @@
 use std::{collections::HashSet, marker::PhantomData};
 use yew_agent::{Worker, WorkerLink, HandlerId, Public};
 
-// TODO:: fix EventBus<T>
 pub struct EventBus<T: Clone + 'static> {
     link: WorkerLink<EventBus<T>>,
     subscribers: HashSet<HandlerId>,
     _marker: PhantomData<T>,
 }
 
-
-impl<T: Clone + 'static> Worker for EventBus<T> {
+// TODO:: fix contract serialization
+impl<T: Clone + 'static>Worker for EventBus<T> {
     type Reach = Public<Self>;
     type Message = ();
     type Input = T;
@@ -53,3 +52,5 @@ impl<T: Clone + 'static> Worker for EventBus<T> {
         self.subscribers.remove(&id);
     }
 }
+
+

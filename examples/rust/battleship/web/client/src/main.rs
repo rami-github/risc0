@@ -29,11 +29,11 @@ use std::rc::Rc;
 use bus::EventBus;
 use near::NearWallet;
 use yew::prelude::*;
-use yew_agent::{Dispatched, Dispatcher};
+use yew_agent::{PublicWorker, Dispatched, Dispatcher};
 use yew_router::prelude::*;
 
 use crate::{
-    game::GameProvider, journal::Journal, layout::Layout, lobby::Lobby, wallet::WalletProvider,
+    game::GameHOC, game::GameProps, journal::Journal, layout::Layout, lobby::Lobby, wallet::WalletProvider,
 };
 
 #[derive(Debug, Clone, PartialEq, Routable)]
@@ -152,44 +152,38 @@ impl AppStructComponent {
     }
 }
 
+
 fn switch(routes: Route) -> Html {
     match routes {
+
         Route::Lobby { } => {
             html! { <Lobby /> }
         }
         Route::NewGame { name } => {
+            let props = yew::props!(GameProps {
+                name: name,
+                until: 1,
+                children: Children::default(),
+            });
             html! {
-                <GameProvider {name} until={1}>
-                    <Layout />
-                </GameProvider> }
+                <GameHOC ..props><Layout/></GameHOC>
+            }
         }
         Route::JoinGame { name } => {
-            html! { <GameProvider {name} until={2}>
-                    <Layout />
-                </GameProvider> }
+            let props = yew::props!(GameProps {
+                name: name,
+                until: 1,
+                children: Children::default(),
+            });
+            html! {
+                <GameHOC ..props><Layout/></GameHOC>
+            }
 }
         Route::NotFound => {
             html! { <h1>{ "404" }</h1> }
         }
     }
 }
-
-// fn switch(routes: &Route) -> Html {
-//     match routes.clone() {
-//         Route::Lobby => html! { <Lobby /> },
-//         Route::NewGame { name } => html! {
-//             <GameProvider {name} until={1}>
-//                 <Layout />
-//             </GameProvider>
-//         },
-//         Route::JoinGame { name } => html! {
-//             <GameProvider {name} until={2}>
-//                 <Layout />
-//             </GameProvider>
-//         },
-//         Route::NotFound => html! { <h1>{ "404" }</h1> },
-//     }
-// }
 
 #[function_component]
 pub fn App() -> Html {
@@ -205,6 +199,7 @@ pub fn AppComponentHOC() -> Html {
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
+    EventBus::register();
     // yew::start_app::<App>();
     yew::Renderer::<App>::new().render();
 }
