@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use serde::de::DeserializeOwned;
+use serde::Serialize;
 use std::{collections::HashSet, marker::PhantomData};
-use yew_agent::{Worker, WorkerLink, HandlerId, Public};
+use yew_agent::{HandlerId, Public, Worker, WorkerLink};
 
-pub struct EventBus<T: Clone + 'static> {
+pub struct EventBus<T: Serialize + DeserializeOwned + Clone + 'static> {
     link: WorkerLink<EventBus<T>>,
     subscribers: HashSet<HandlerId>,
     _marker: PhantomData<T>,
 }
 
 // TODO:: fix contract serialization
-impl<T: Clone + 'static>Worker for EventBus<T> {
+impl<T: Serialize + DeserializeOwned + Clone + 'static> Worker for EventBus<T> {
     type Reach = Public<Self>;
     type Message = ();
     type Input = T;
@@ -52,5 +54,3 @@ impl<T: Clone + 'static>Worker for EventBus<T> {
         self.subscribers.remove(&id);
     }
 }
-
-

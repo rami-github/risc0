@@ -21,19 +21,20 @@ mod journal;
 mod layout;
 mod lobby;
 mod near;
-mod wallet;
 mod state;
+mod wallet;
 
 use std::rc::Rc;
 
 use bus::EventBus;
 use near::NearWallet;
 use yew::prelude::*;
-use yew_agent::{PublicWorker, Dispatched, Dispatcher};
+use yew_agent::{Dispatched, Dispatcher};
 use yew_router::prelude::*;
 
 use crate::{
-    game::GameHOC, game::GameProps, journal::Journal, layout::Layout, lobby::Lobby, wallet::WalletProvider,
+    game::GameHOC, game::GameProps, journal::Journal, layout::Layout, lobby::Lobby,
+    wallet::WalletProvider,
 };
 
 #[derive(Debug, Clone, PartialEq, Routable)]
@@ -152,11 +153,9 @@ impl AppStructComponent {
     }
 }
 
-
 fn switch(routes: Route) -> Html {
     match routes {
-
-        Route::Lobby { } => {
+        Route::Lobby {} => {
             html! { <Lobby /> }
         }
         Route::NewGame { name } => {
@@ -178,7 +177,7 @@ fn switch(routes: Route) -> Html {
             html! {
                 <GameHOC ..props><Layout/></GameHOC>
             }
-}
+        }
         Route::NotFound => {
             html! { <h1>{ "404" }</h1> }
         }
@@ -199,7 +198,7 @@ pub fn AppComponentHOC() -> Html {
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
-    EventBus::register();
+    // EventBus::register();
     // yew::start_app::<App>();
     yew::Renderer::<App>::new().render();
 }
