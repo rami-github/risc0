@@ -24,7 +24,7 @@ impl Reducible for State {
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
         match action {
             Action::PlaceShips(ships, name) => {
-                LocalStorage::set(name, ships);
+                LocalStorage::set(name, ships).unwrap();
                 State {
                     game: GameState {
                         ships:ships,
@@ -43,11 +43,9 @@ impl Reducible for State {
 impl Default for State {
     fn default() -> Self {
         Self {
-
             game: GameState::new(),
-            is_ready: false,
+            is_ready: true,
         }
-
     }
 }
 
@@ -57,6 +55,5 @@ impl State {
             game: LocalStorage::get("some name").unwrap_or(GameState::new()),
             is_ready: false,
         }
-
     }
 }

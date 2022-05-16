@@ -53,4 +53,8 @@ impl<T: Serialize + DeserializeOwned + Clone + 'static> Worker for EventBus<T> {
     fn disconnected(&mut self, id: HandlerId) {
         self.subscribers.remove(&id);
     }
+
+    fn name_of_resource() -> &'static str {
+        "worker.js"
+    }
 }

@@ -29,13 +29,15 @@ use std::rc::Rc;
 use bus::EventBus;
 use near::NearWallet;
 use yew::prelude::*;
-use yew_agent::{Dispatched, Dispatcher};
 use yew_router::prelude::*;
+use yew_agent::{Dispatched, Dispatcher};
 
 use crate::{
-    game::GameHOC, game::GameProps, journal::Journal, layout::Layout, lobby::Lobby,
+    game::GameHOC, game::Props, journal::Journal, layout::Layout, lobby::Lobby,
     wallet::WalletProvider,
 };
+
+use yew_agent::PublicWorker;
 
 #[derive(Debug, Clone, PartialEq, Routable)]
 enum Route {
@@ -159,20 +161,18 @@ fn switch(routes: Route) -> Html {
             html! { <Lobby /> }
         }
         Route::NewGame { name } => {
-            let props = yew::props!(GameProps {
+            let props = yew::props!(Props {
                 name: name,
                 until: 1,
-                children: Children::default(),
             });
             html! {
                 <GameHOC ..props><Layout/></GameHOC>
             }
         }
         Route::JoinGame { name } => {
-            let props = yew::props!(GameProps {
+            let props = yew::props!(Props {
                 name: name,
                 until: 1,
-                children: Children::default(),
             });
             html! {
                 <GameHOC ..props><Layout/></GameHOC>

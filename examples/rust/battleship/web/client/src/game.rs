@@ -26,13 +26,11 @@ use crate::{
     contract::{Contract, ContractState},
     near::NearContract,
     wallet::WalletContext,
+    state::{State, Action},
 };
 use battleship_core::{
     GameState, Position, RoundParams, RoundResult, Ship, ShipDirection, BOARD_SIZE, SHIP_SPANS,
 };
-
-// use crate::state::{Action, State};
-// use yew::prelude::*;
 
 pub type CoreHitType = battleship_core::HitType;
 
@@ -160,17 +158,15 @@ fn create_random_ships() -> [Ship; 5] {
     ships
 }
 
-#[derive(Properties, PartialEq)]
+#[derive(Clone, Properties, PartialEq)]
 pub struct Props {
     pub name: String,
     pub until: usize,
-    pub game_props: GameProps,
     #[prop_or_else(create_random_ships)]
     pub ships: [Ship; 5],
     #[prop_or_default]
     pub children: Children,
 }
-
 
 
 pub struct GameProvider {
@@ -405,34 +401,41 @@ impl Component for GameProvider {
         }
     }
 }
-#[derive(Clone, PartialEq, Properties)]
-pub struct GameProps {
-    pub name: String,
-    pub until: usize,
-    pub children: Children,
+
+// #[derive(Clone, PartialEq, Properties)]
+#[function_component]
+pub fn GameProviderHOC() -> Html {
+    let game_props = use_context::<Props>().expect("no ctx found");
+    let game_state = use_reducer(State::reset);
+    log::info!("{}", game_state.is_ready);
+    // use_effect_with_deps(
+    //     move |game_state| {
+    //         // game reset
+    //         if !game_state.is_ready {
+    //             game_state.dispatch(Action::PlaceShips(create_random_ships(), "game name here".to_string()));
+    //         } else {
+    //             game_state.dispatch(Action::GameReset());
+    //         }
+    //         || ()
+    //     },
+    //     game_state.clone(),
+    // );
+    html! {<GameProvider ..game_props />}
 }
-
-// #[function_component]
-// pub fn GameProviderHOC() -> Html {
-//     let game_props = use_context::<GameProps>().expect("no ctx found");
-//     let game_state = use_reducer(State::default);
-
-//     html! {<GameProvider />}
-// }
 
 
 #[function_component]
-pub fn GameHOC(props: &GameProps) -> Html {
-    let GameProps { name, until, children } = props;
-    let ctx = use_state(|| GameProps {
-        name: name.clone(),
-        until: until.clone(),
-        children: Children::from(children.clone()),
+pub fn GameHOC(props: &Props) -> Html {
+    let ctx = use_state(|| Props {
+        name: props.name.clone(),
+        until: props.until.clone(),
+        ships: create_random_ships(),
+        children: Children::default()
     });
     html! {
-        <ContextProvider<GameProps> context={(*ctx).clone()}>
-            <GameProvider {name} until={1} />
-        </ContextProvider<GameProps>>
+        <ContextProvider<Props> context={(*ctx).clone()}>
+            <GameProviderHOC />
+        </ContextProvider<Props>>
 
     }
 }
