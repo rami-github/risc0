@@ -13,12 +13,6 @@
 // limitations under the License.
 
 
-
-use battleship::{
-    bus::EventBus
-};
-
 fn main() {
-    EventBus::register();
-    // todo!()
+    todo!()
 }
