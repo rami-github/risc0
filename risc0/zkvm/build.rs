@@ -24,6 +24,7 @@ fn main() {
     cxx_build::bridge("lib.rs")
         .file("prove/exec.cpp")
         .file("prove/io_handler.cpp")
+        .file("prove/method_id.cpp")
         .file("prove/riscv.cpp")
         .file("prove/step_context.cpp")
         .file("prove/step.cpp")
